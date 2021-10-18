@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbarMain);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setTitle("Drowsy Driver asdfMenu");
+        getSupportActionBar().setTitle("Drowsy Driver Menu");
     }
 
     @Override
