@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Preference category">
-
+    <PreferenceCategory
+        android:title="Preference category">
         <EditTextPreference
             android:defaultValue="Default value"
             android:key="edit_text_preference_1"

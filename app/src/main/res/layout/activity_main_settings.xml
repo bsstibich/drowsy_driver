@@ -4,11 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainSettings">
+    tools:context=".MainSettings"
+    >
 
     <include
         android:id="@+id/toolbarSettings"
         layout="@layout/toolbar"
         />
+
+    <FrameLayout
+        android:id="@+id/MainPreferenceFragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="675dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbarSettings" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
