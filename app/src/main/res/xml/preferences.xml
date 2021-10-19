@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="Preference category">
-        <EditTextPreference
-            android:defaultValue="Default value"
-            android:key="edit_text_preference_1"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="Edit text preference" />
-    </PreferenceCategory>
+        android:title="Driver Settings"/>
+    <ListPreference
+        android:key="pref_driver_type"
+        android:title="Driver Type"
+        android:entries="@array/pref_driver_entries"
+        android:entryValues="@array/pref_driver_values"
+        android:defaultValue="@string/pref_driver_default"
+        android:summary="@string/pref_driver_summary"
+         />
     <PreferenceCategory android:title="Preference category">
 
         <EditTextPreference
@@ -18,24 +19,11 @@
             android:singleLine="true"
             android:title="Edit text preference" />
     </PreferenceCategory>
-    <ListPreference
-        android:defaultValue="1"
-        android:entries="@android:array/emailAddressTypes"
-        android:entryValues="@android:array/postalAddressTypes"
-        android:key="list_preference_1"
-        android:title="List preference" />
+
     <MultiSelectListPreference
         android:defaultValue="@android:array/imProtocols"
         android:entries="@android:array/postalAddressTypes"
         android:entryValues="@android:array/phoneTypes"
         android:key="multi_select_list_preference_1"
         android:title="Multi select list preference" />
-    <RingtonePreference
-        android:defaultValue=""
-        android:key="ringtone_preference_1"
-        android:title="Ringtone preference" />
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="switch_preference_1"
-        android:title="Switch preference" />
 </PreferenceScreen>

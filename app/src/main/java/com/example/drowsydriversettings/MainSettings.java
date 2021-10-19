@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.view.Menu;
 import android.view.MenuInflater;
 
@@ -36,6 +37,7 @@ public class MainSettings extends AppCompatActivity {
 
         getSupportActionBar().setTitle("Settings"); //title
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); //adding back button
+
 
     }
 
