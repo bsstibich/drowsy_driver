@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">DrowsyDriverSettings</string>
 
-    <string name="pref_driver_default">Commuter</string>
-    <string name="pref_driver_summary">
-        Commuter
-    </string>
+    <string name="pref_driver_default">Road Tripper</string>
+    <string name="pref_driver_summary">Road Tripper</string>
 
     <string-array name="pref_driver_entries">
         <item>Truck Driver</item>

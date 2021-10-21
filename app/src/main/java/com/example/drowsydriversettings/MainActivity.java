@@ -1,17 +1,13 @@
 package com.example.drowsydriversettings;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.ButtonBarLayout;
 
-import android.app.Notification;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.Button;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,35 +16,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbarMain);
-        setSupportActionBar(toolbar);
+        Boolean authorized = true;
 
-        getSupportActionBar().setTitle("Drowsy Driver Menu");
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) { //creates tool bar drop down options
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId())
-        {
-            case R.id.Settings:
-                startActivity(new Intent(this, MainSettings.class));
-                return true;
-            case R.id.item1:
-                return true;
-            case R.id.item2:
-                return true;
-            case R.id.sub_item1:
-                return true;
-            case R.id.sub_item2:
-                return true;
+        if (authorized){
+            Button b = findViewById(R.id.button1);
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //Intent i = new Intent(MainActivity.this, MainScreen.class);
+                    Intent i = MainScreen.makeIntent(MainActivity.this);
+                    startActivity(i);
+                    //finish(); //pressing back on home screen takes you out of app
+                }
+            });
         }
-        return super.onOptionsItemSelected(item);
+
+
     }
+
+
+
+
+
 }
