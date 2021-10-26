@@ -12,9 +12,10 @@
         android:layout_marginStart="61dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="61dp"
-        android:text="Hello new driver!\n\nPlease enter the following data to get started driving safer"
+        android:text="Hello new driver!\nPlease enter the following data to get started driving safer"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="14sp"
+        android:textStyle="bold"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +49,10 @@
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/fullName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/welcomeLabel"
+        app:layout_constraintVertical_bias="1.0" />
 
     <EditText
         android:id="@+id/fullName"
@@ -67,8 +71,8 @@
 
     <RadioGroup
         android:id="@+id/driverType"
-        android:layout_width="214dp"
-        android:layout_height="133dp"
+        android:layout_width="165dp"
+        android:layout_height="117dp"
         android:layout_marginStart="99dp"
         android:layout_marginEnd="98dp"
         android:layout_marginBottom="11dp"
@@ -79,16 +83,16 @@
 
         <RadioButton
             android:id="@+id/commuter"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_width="146dp"
+            android:layout_height="36dp"
             android:text="Commuter"
             android:textSize="14sp"
             android:visibility="visible" />
 
         <RadioButton
             android:id="@+id/professionalDriver"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_width="165dp"
+            android:layout_height="31dp"
             android:text="Professional Driver"
             android:textSize="14sp"
             android:visibility="visible"
@@ -96,8 +100,8 @@
 
         <RadioButton
             android:id="@+id/roadTripper"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_width="149dp"
+            android:layout_height="36dp"
             android:text="Road Tripper"
             android:textSize="14sp"
             android:visibility="visible"
@@ -170,9 +174,9 @@
         android:text="Cancel"
         android:textSize="8sp"
         android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="693dp" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/vehicleInfoLabel"
