@@ -18,7 +18,12 @@ public class MainActivity extends AppCompatActivity {
         createAccount.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                openCreateAccount();
+                switch(v.getId()){
+                    case R.id.createAccount:
+                        openCreateAccount();
+                        break;
+                }
+
             }
         });
 
