@@ -11,6 +11,11 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="preferenceTheme">@style/Theme.DrowsyDriverSettings.PreferenceThemeOverlay</item>
         <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.DrowsyDriverSettings.PreferenceThemeOverlay" parent="@style/PreferenceThemeOverlay">
+        <item name="android:layout">@layout/preference_override</item>
     </style>
 </resources>
