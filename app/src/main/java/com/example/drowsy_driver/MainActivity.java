@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button createAccount;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         signIn = (Button) findViewById(R.id.signInButton);
         signIn.setOnClickListener(this);
+
 
         editTextEmail = (EditText) findViewById(R.id.editTextTextEmailAddress);
         editTextPassword = (EditText) findViewById(R.id.editTextTextPassword);
@@ -82,7 +84,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    //redirect to main loop
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if(user.isEmailVerified()){ //successful log in
+                        //redirect to main loop
+                    }else{
+                        user.sendEmailVerification();
+                        Toast.makeText(MainActivity.this, "Check your email for account verification", Toast.LENGTH_LONG).show();
+                    }
+
+
                 }else{
                     Toast.makeText(MainActivity.this, "Failed to Login!\nEmail or password may be incorrect.", Toast.LENGTH_LONG).show();
                 }
