@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Drowsy_driver">
+        <activity android:name=".ForgotPassword"></activity>
         <activity
             android:name=".activity_create_account"
             android:exported="false" />
