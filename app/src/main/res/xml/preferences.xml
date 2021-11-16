@@ -21,6 +21,7 @@
     <PreferenceCategory android:title="User Settings">
         <Preference
             android:key="pref_personal_information"
+            android:id="@+id/personal_information"
             android:title="Personal Information"
             android:icon="@drawable/person_icon"
             />

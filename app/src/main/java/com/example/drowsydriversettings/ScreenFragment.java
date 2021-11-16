@@ -34,7 +34,7 @@ public class ScreenFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.LogOut:
-                NavHostFragment.findNavController(ScreenFragment.this).navigate(R.id.action_screen2_to_loginFragment);
+                NavHostFragment.findNavController(ScreenFragment.this).navigateUp();
                 return true;
             case R.id.item1:
                 return true;

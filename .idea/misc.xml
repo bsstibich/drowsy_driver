@@ -8,12 +8,15 @@
         <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/layout/activity_main.xml" value="0.2264151024877837" />
         <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/layout/activity_main_screen.xml" value="0.28351449275362317" />
         <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/layout/activity_main_settings.xml" value="0.2346014492753623" />
+        <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/layout/fragment_display_personal_info.xml" value="0.29528985507246375" />
         <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/layout/fragment_login.xml" value="0.3145833333333333" />
+        <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/layout/fragment_pi_settings.xml" value="0.30027173913043476" />
         <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/layout/fragment_screen.xml" value="0.18113208199022698" />
         <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/layout/fragment_settings_screen.xml" value="0.3145833333333333" />
         <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/layout/preference_override.xml" value="0.3145833333333333" />
         <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/layout/toolbar.xml" value="0.2346014492753623" />
         <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/menu/menu_main.xml" value="0.2988679352838745" />
+        <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/xml/personal_information_preferences.xml" value="0.30027173913043476" />
         <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/xml/preferences.xml" value="0.2988679352838745" />
         <entry key="..\:/Users/Tri/AndroidStudioProjects/DrowsyDriverSettings/app/src/main/res/xml/root_preferences.xml" value="0.26222826086956524" />
       </map>

@@ -36,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
             {
                 NavigationUI.setupActionBarWithNavController(MainActivity.this, Navigation.findNavController(this, R.id.fragmentContainerView));
             }
+            else if (getSupportActionBar().getTitle().equals("Personal Information"))
+            {
+                NavigationUI.setupActionBarWithNavController(MainActivity.this, Navigation.findNavController(this, R.id.fragmentContainerView));
+            }
         }
 
         /*
