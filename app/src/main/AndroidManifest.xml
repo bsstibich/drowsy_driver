@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.drowsy_driver">
+    package="com.example.drowsy_driver">\
+
+    <uses-feature android:name="android.hardware.camera"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
@@ -9,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Drowsy_driver">
-        <activity android:name=".camFunctionality"></activity>
+        <activity android:name=".camFunctionality"/>
         <activity android:name=".ForgotPassword" />
         <activity
             android:name=".activity_create_account"
