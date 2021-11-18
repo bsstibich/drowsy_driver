@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user.isEmailVerified()){ //successful log in
                         //redirect to main loop
+                        //startActivity(new Intent(this, MAIN_CAMERA_LOOP_ACTIVITY.class)); //CHANGE TO MAIN CAMERA ACTIVITY
                     }else{
                         user.sendEmailVerification();
                         Toast.makeText(MainActivity.this, "Check your email for account verification", Toast.LENGTH_LONG).show();
