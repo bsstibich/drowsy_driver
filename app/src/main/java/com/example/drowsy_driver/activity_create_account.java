@@ -35,7 +35,7 @@ public class activity_create_account extends AppCompatActivity implements View.O
         cancelButton.setOnClickListener(this);
 
         EditText editTextEmail = findViewById(R.id.email);
-        EditText editTextUserName = findViewById(R.id.userName);
+        //EditText editTextUserName = findViewById(R.id.userName);
         EditText editTextFullName = findViewById(R.id.fullName);
         EditText editTextPassword = findViewById(R.id.password);
         EditText editTextConfirmPassword = findViewById(R.id.confirmPassword);
@@ -48,7 +48,7 @@ public class activity_create_account extends AppCompatActivity implements View.O
     public void onClick(View v){
         switch(v.getId()){
             case R.id.cancelButton:
-                //startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, MainActivity.class));
                 break;
             case R.id.createAccount:
                 createAccount();
@@ -59,7 +59,7 @@ public class activity_create_account extends AppCompatActivity implements View.O
 
     private void createAccount() {
         EditText editTextEmail = findViewById(R.id.email);
-        EditText editTextUserName = findViewById(R.id.userName);
+        //EditText editTextUserName = findViewById(R.id.userName);
         EditText editTextFullName = findViewById(R.id.fullName);
         EditText editTextPassword = findViewById(R.id.password);
         EditText editTextConfirmPassword = findViewById(R.id.confirmPassword);
@@ -67,17 +67,17 @@ public class activity_create_account extends AppCompatActivity implements View.O
 
 
         String email = editTextEmail.getText().toString().trim();
-        String userName = editTextUserName.getText().toString().trim();
+        //String userName = editTextUserName.getText().toString().trim();
         String fullName = editTextFullName.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
         String confirmPassword = editTextConfirmPassword.getText().toString().trim();
         String vehicleInfo = editTextVehicleInfo.getText().toString().trim();
 
-        if(userName.isEmpty()){
-            editTextUserName.setError("Username is required");
-            editTextUserName.requestFocus();
-            return;
-        }
+        //if(userName.isEmpty()){
+        //    editTextUserName.setError("Username is required");
+        //    editTextUserName.requestFocus();
+        //    return;
+        //}
         if(fullName.isEmpty()){
             editTextFullName.setError("Full name is required");
             editTextFullName.requestFocus();
@@ -124,7 +124,7 @@ public class activity_create_account extends AppCompatActivity implements View.O
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            Account account = new Account(email, userName, fullName, password, vehicleInfo);
+                            Account account = new Account(email, fullName, password, vehicleInfo);
 
                             FirebaseDatabase.getInstance().getReference("Accounts")
                                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())

@@ -7,9 +7,9 @@ public class Account {
     private String password;
     private String vehicleInfo;
     public Account(){}
-    public Account(String email, String userName, String fullName, String password, String vehicleInfo) {
+    public Account(String email, String fullName, String password, String vehicleInfo) {
         this.email = email;
-        this.userName = userName;
+        //this.userName = userName;
         this.fullName = fullName;
         this.password = password;
         this.vehicleInfo = vehicleInfo;
@@ -21,14 +21,6 @@ public class Account {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public String getFullName() {
