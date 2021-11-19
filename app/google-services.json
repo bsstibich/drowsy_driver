@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "51072824207",
+    "firebase_url": "https://drowsy-driver-b9bc8-default-rtdb.firebaseio.com",
+    "project_id": "drowsy-driver-b9bc8",
+    "storage_bucket": "drowsy-driver-b9bc8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:51072824207:android:6d6419f96895f60734d1fa",
+        "android_client_info": {
+          "package_name": "com.example.drowsy_driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "51072824207-2moprevmk14o1pbp5v4atpfqh2amd75l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvbnpzy93sla_PP6TwnQLWIGaC4PKNOso"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "51072824207-2moprevmk14o1pbp5v4atpfqh2amd75l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:51072824207:android:9727ae504d035a6534d1fa",
+        "android_client_info": {
+          "package_name": "com.example.drowsydriversettings"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "51072824207-2moprevmk14o1pbp5v4atpfqh2amd75l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvbnpzy93sla_PP6TwnQLWIGaC4PKNOso"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "51072824207-2moprevmk14o1pbp5v4atpfqh2amd75l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

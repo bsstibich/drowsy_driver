@@ -20,6 +20,27 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".CreateAccountActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_ACCOUNT"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.GET_PASSWORD"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+
     </application>
 
 </manifest>
