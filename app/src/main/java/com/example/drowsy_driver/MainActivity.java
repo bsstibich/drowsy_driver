@@ -18,6 +18,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import static androidx.test.InstrumentationRegistry.getContext;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button createAccount;
     private EditText editTextEmail, editTextPassword;
@@ -94,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user.isEmailVerified()){ //successful log in
                         //redirect to main loop
-                        //startActivity(new Intent(this, MAIN_CAMERA_LOOP_ACTIVITY.class)); //CHANGE TO MAIN CAMERA ACTIVITY
+                        startActivity(new Intent(getApplicationContext(), camFunctionality.class)); //CHANGE TO MAIN CAMERA ACTIVITY
                     }else{
                         user.sendEmailVerification();
                         Toast.makeText(MainActivity.this, "Check your email for account verification", Toast.LENGTH_LONG).show();
