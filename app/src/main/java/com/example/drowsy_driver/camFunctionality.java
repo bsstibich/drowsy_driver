@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
@@ -19,20 +20,35 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 //import android.graphics.Camera;
+import android.graphics.PointF;
+import android.graphics.Rect;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.face.Face;
+import com.google.mlkit.vision.face.FaceDetection;
+import com.google.mlkit.vision.face.FaceDetector;
+import com.google.mlkit.vision.face.FaceDetectorOptions;
+import com.google.mlkit.vision.face.FaceLandmark;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.google.mlkit.vision.face.FaceDetectorOptions.CLASSIFICATION_MODE_ALL;
+import static com.google.mlkit.vision.face.FaceDetectorOptions.LANDMARK_MODE_ALL;
 
 public class camFunctionality extends AppCompatActivity {
 
@@ -176,12 +192,75 @@ public class camFunctionality extends AppCompatActivity {
 // ML KIT IMPLEMENTATION WILL BEGIN HERE
 // =================================================================================================
 
+// SET UP FACE DETECTION OBJECT
+// -------------------------------------------------------------------------------------------------
+
+        // set to detect eyes and classify as open or closed
+        FaceDetectorOptions classifyLandmarks = new FaceDetectorOptions.Builder()
+                .setLandmarkMode(LANDMARK_MODE_ALL)
+                .setClassificationMode(CLASSIFICATION_MODE_ALL)
+                .build();
+
+        FaceDetector detector = FaceDetection.getClient(classifyLandmarks);
+
 // IMAGE ANALYZER
 // -------------------------------------------------------------------------------------------------
 
         imageAnalysis.setAnalyzer(analysisExecutor, new ImageAnalysis.Analyzer() {
             @Override
             public void analyze(@NonNull @NotNull ImageProxy imageProxy) {
+
+// FEED IMAGE INTO ML ALGORITHM
+// -------------------------------------------------------------------------------------------------
+
+                @OptIn(markerClass = androidx.camera.core.ExperimentalGetImage.class)
+                Image mediaImage = imageProxy.getImage();
+
+                if (mediaImage != null) {
+                    InputImage image =
+                            InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
+
+// FACE DETECTION LISTENERS
+// -------------------------------------------------------------------------------------------------
+
+                    Task<List<Face>> result =
+                            detector.process(image)
+                                    .addOnSuccessListener(
+                                            new OnSuccessListener<List<Face>>() {
+                                                @Override
+                                                public void onSuccess(List<Face> faces) {
+                                                    for (Face face : faces) {
+                                                        Rect bounds = face.getBoundingBox();
+
+                                                        FaceLandmark leftEye = face.getLandmark(FaceLandmark.LEFT_EYE);
+                                                        if (leftEye != null) {
+                                                            PointF leftEyePos = leftEye.getPosition();
+                                                        }
+
+                                                        FaceLandmark rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE);
+                                                        if (rightEye != null) {
+                                                            PointF rightEyePos = rightEye.getPosition();
+                                                        }
+
+                                                        if (face.getLeftEyeOpenProbability() != null) {
+                                                            float leftEyeOpenProb = face.getLeftEyeOpenProbability();
+                                                        }
+
+                                                        if (face.getRightEyeOpenProbability() != null) {
+                                                            float rightEyeOpenProb = face.getRightEyeOpenProbability();
+                                                        }
+                                                    }
+                                                }
+                                            })
+                                    .addOnFailureListener(
+                                            new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    // Task failed with an exception
+                                                    // ...
+                                                }
+                                            });
+                }
                 //int rotationDegrees = imageProxy.getImageInfo().getRotationDegrees();
                 //orientationEventListener.onOrientationChanged(rotationDegrees);
                 imageProxy.close();
