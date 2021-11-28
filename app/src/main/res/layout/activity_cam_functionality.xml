@@ -11,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.example.drowsy_driver.RectOverlay
-        android:id="@+id/rect_overlay"
+    <com.example.drowsy_driver.Overlay
+        android:id="@+id/overlay_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible" />

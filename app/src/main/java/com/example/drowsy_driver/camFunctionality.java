@@ -64,8 +64,10 @@ public class camFunctionality extends AppCompatActivity {
     private Executor analysisExecutor;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     PreviewView previewView;
-    RectOverlay rectOverlay;
+    Overlay overlay;
     Canvas canvas;
+
+    final static float EYE_OPEN_THRESHOLD = 0.7F;
 
 // OVERRIDE DRAWING METHOD TO OVERLAY RECTANGLES
 // -------------------------------------------------------------------------------------------------
@@ -85,7 +87,7 @@ public class camFunctionality extends AppCompatActivity {
 // INITIALIZE DRAWING OBJECTS
 // -------------------------------------------------------------------------------------------------
 
-        rectOverlay = findViewById(R.id.rect_overlay);
+        overlay = findViewById(R.id.overlay_view);
         canvas = new Canvas();
 
 // =================================================================================================
@@ -263,29 +265,45 @@ public class camFunctionality extends AppCompatActivity {
 
     private void processFaces(List<Face> faces) {
 
-        for (Face face : faces) {
-            Log.d("camFunctionality", "found a face");
+        if (faces.size() == 1) {
 
-            Rect bounds = face.getBoundingBox();
-            rectOverlay.frameFace(bounds);
+            for (Face face : faces) {
 
-            FaceLandmark leftEye = face.getLandmark(FaceLandmark.LEFT_EYE);
-            if (leftEye != null) {
-                PointF leftEyePos = leftEye.getPosition();
+                overlay.foundFace(true);
+                //Rect bounds = face.getBoundingBox();
+                //rectOverlay.frameFace(bounds);
+
+                if (foundEyes(face)) {
+                    checkEyesOpen(face);
+                }
             }
+        } else {
+            overlay.foundFace(false);
+        }
+    }
 
-            FaceLandmark rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE);
-            if (rightEye != null) {
-                PointF rightEyePos = rightEye.getPosition();
-            }
+    private void checkEyesOpen(Face face) {
+        if (face.getLeftEyeOpenProbability() == null || face.getRightEyeOpenProbability() == null) {
+            overlay.eyesOpen(false);
+        } else {
+            boolean eyes = (face.getLeftEyeOpenProbability() >= EYE_OPEN_THRESHOLD
+                    && face.getRightEyeOpenProbability() >= EYE_OPEN_THRESHOLD);
+            overlay.eyesOpen(eyes);
+        }
+    }
 
-            if (face.getLeftEyeOpenProbability() != null) {
-                float leftEyeOpenProb = face.getLeftEyeOpenProbability();
-            }
+    private boolean foundEyes(Face face) {
+        FaceLandmark leftEye = face.getLandmark(FaceLandmark.LEFT_EYE);
+        FaceLandmark rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE);
 
-            if (face.getRightEyeOpenProbability() != null) {
-                float rightEyeOpenProb = face.getRightEyeOpenProbability();
-            }
+        if (leftEye != null && rightEye != null) {
+            overlay.foundEyes(true);
+            return true;
+            //PointF leftEyePos = leftEye.getPosition();
+            //PointF rightEyePos = rightEye.getPosition();
+        } else {
+            overlay.foundEyes(false);
+            return false;
         }
     }
 
