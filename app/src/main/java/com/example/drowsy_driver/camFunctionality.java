@@ -17,15 +17,22 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 //import android.graphics.Camera;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.Surface;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -52,11 +59,18 @@ import static com.google.mlkit.vision.face.FaceDetectorOptions.LANDMARK_MODE_ALL
 
 public class camFunctionality extends AppCompatActivity {
 
+    ActivityResultLauncher<String> requestPermissionLauncher;
     private ImageAnalysis imageAnalysis;
-    private boolean cam_access = false;
     private Executor analysisExecutor;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
-    PreviewView preview_view;
+    PreviewView previewView;
+    RectOverlay rectOverlay;
+    Canvas canvas;
+
+// OVERRIDE DRAWING METHOD TO OVERLAY RECTANGLES
+// -------------------------------------------------------------------------------------------------
+
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,47 +80,21 @@ public class camFunctionality extends AppCompatActivity {
 // INITIALIZE CAMERA SURFACE
 // -------------------------------------------------------------------------------------------------
 
-        preview_view = (PreviewView) findViewById(R.id.preview_view);
+        previewView = (PreviewView) findViewById(R.id.preview_view);
+
+// INITIALIZE DRAWING OBJECTS
+// -------------------------------------------------------------------------------------------------
+
+        rectOverlay = findViewById(R.id.rect_overlay);
+        canvas = new Canvas();
 
 // =================================================================================================
 // CAMERA PERMISSIONS CHECK BEGINS
 // =================================================================================================
 
-        // Register the permissions callback, which handles the user's response to the
-        // system permissions dialog.
-        ActivityResultLauncher<String> requestPermissionLauncher =
-                registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-            if (isGranted) {
-                cam_access = true;
-            } else {
-                // cam_access = false;
-                // Explain that it is necessary and link back to main page
-                Toast.makeText(this, "You can't use drowsy driver without granting CAMERA permission",
-                        Toast.LENGTH_LONG).show();
-                finish();
-            }
-        });
-
-        // check if the app already has permissions for camera
-        if (ContextCompat.checkSelfPermission(
-                this, Manifest.permission.CAMERA) ==
-                PackageManager.PERMISSION_GRANTED) {
-            // You can use the API that requires the permission.
-            cam_access = true;
-            /*
-        } else if (shouldShowRequestPermissionRationale(...)) {
-            // In an educational UI, explain to the user why your app requires this
-            // permission for a specific feature to behave as expected. In this UI,
-            // include a "cancel" or "no thanks" button that allows the user to
-            // continue using your app without granting the permission.
-            showInContextUI(...);
-             */
-        } else {
-            // You can directly ask for the permission.
-            // The registered ActivityResultCallback gets the result of this request.
-            requestPermissionLauncher.launch(
-                    Manifest.permission.CAMERA);
-        }
+        registerCamPermissionResponse();
+        tryToStartCamera();
+    }
 
 // =================================================================================================
 // CAMERA PERMISSIONS CHECK ENDS
@@ -116,13 +104,8 @@ public class camFunctionality extends AppCompatActivity {
 // CAMERA USE CASE BEGINS
 // =================================================================================================
 
-        // main loop begins here only if permissions satisfied
-        if (cam_access) {
-            startCamera();
-        }
-    }
-
     private void startCamera() {
+
 // LISTENER
 // -------------------------------------------------------------------------------------------------
 
@@ -137,12 +120,12 @@ public class camFunctionality extends AppCompatActivity {
             public void run() {
                 try {
 
-// CAMERA PROVIDER
+// CAMERA PROVIDER OBJECT
 // -------------------------------------------------------------------------------------------------
 
                     // Camera provider is now guaranteed to be available
                     ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-                    bindPreview(cameraProvider);
+                    bindUseCases(cameraProvider);
 
 // EXCEPTIONS
 // -------------------------------------------------------------------------------------------------
@@ -156,7 +139,7 @@ public class camFunctionality extends AppCompatActivity {
         }, ContextCompat.getMainExecutor(this));
     }
 
-    private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
+    private void bindUseCases(@NonNull ProcessCameraProvider cameraProvider) {
 // PREVIEW
 // -------------------------------------------------------------------------------------------------
 
@@ -182,7 +165,6 @@ public class camFunctionality extends AppCompatActivity {
 // -------------------------------------------------------------------------------------------------
 
         // Set up the analysis use case for ML kit
-        // Set image output to RGB format
         imageAnalysis = new ImageAnalysis.Builder()
                 //.setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -196,12 +178,12 @@ public class camFunctionality extends AppCompatActivity {
 // -------------------------------------------------------------------------------------------------
 
         // set to detect eyes and classify as open or closed
-        FaceDetectorOptions classifyLandmarks = new FaceDetectorOptions.Builder()
+        FaceDetectorOptions options = new FaceDetectorOptions.Builder()
                 .setLandmarkMode(LANDMARK_MODE_ALL)
                 .setClassificationMode(CLASSIFICATION_MODE_ALL)
                 .build();
 
-        FaceDetector detector = FaceDetection.getClient(classifyLandmarks);
+        FaceDetector detector = FaceDetection.getClient(options);
 
 // IMAGE ANALYZER
 // -------------------------------------------------------------------------------------------------
@@ -220,49 +202,9 @@ public class camFunctionality extends AppCompatActivity {
                     InputImage image =
                             InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
 
-// FACE DETECTION LISTENERS
-// -------------------------------------------------------------------------------------------------
-
-                    Task<List<Face>> result =
-                            detector.process(image)
-                                    .addOnSuccessListener(
-                                            new OnSuccessListener<List<Face>>() {
-                                                @Override
-                                                public void onSuccess(List<Face> faces) {
-                                                    for (Face face : faces) {
-                                                        Rect bounds = face.getBoundingBox();
-
-                                                        FaceLandmark leftEye = face.getLandmark(FaceLandmark.LEFT_EYE);
-                                                        if (leftEye != null) {
-                                                            PointF leftEyePos = leftEye.getPosition();
-                                                        }
-
-                                                        FaceLandmark rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE);
-                                                        if (rightEye != null) {
-                                                            PointF rightEyePos = rightEye.getPosition();
-                                                        }
-
-                                                        if (face.getLeftEyeOpenProbability() != null) {
-                                                            float leftEyeOpenProb = face.getLeftEyeOpenProbability();
-                                                        }
-
-                                                        if (face.getRightEyeOpenProbability() != null) {
-                                                            float rightEyeOpenProb = face.getRightEyeOpenProbability();
-                                                        }
-                                                    }
-                                                }
-                                            })
-                                    .addOnFailureListener(
-                                            new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    // Task failed with an exception
-                                                    // ...
-                                                }
-                                            });
+                    detectFaces(image, detector);
                 }
-                //int rotationDegrees = imageProxy.getImageInfo().getRotationDegrees();
-                //orientationEventListener.onOrientationChanged(rotationDegrees);
+
                 imageProxy.close();
             }
         });
@@ -280,14 +222,115 @@ public class camFunctionality extends AppCompatActivity {
 // -------------------------------------------------------------------------------------------------
 
         // Attach use cases to the camera with the same lifecycle owner
-        Camera camera = (Camera) cameraProvider.bindToLifecycle((LifecycleOwner) this,
+        Camera camera = cameraProvider.bindToLifecycle(this,
                 cameraSelector,
                 preview,
                 imageAnalysis);
 
         // Connect the preview use case to the previewView
-        preview.setSurfaceProvider(preview_view.getSurfaceProvider());
+        preview.setSurfaceProvider(previewView.getSurfaceProvider());
     }
+
+// =================================================================================================
+// CAMERA USE CASE ENDS
+// =================================================================================================
+
+    private void detectFaces(InputImage image, FaceDetector detector) {
+
+// FACE DETECTION LISTENERS
+// -------------------------------------------------------------------------------------------------
+
+        Task<List<Face>> result =
+                detector.process(image)
+                        .addOnSuccessListener(
+                                new OnSuccessListener<List<Face>>() {
+                                    @Override
+                                    public void onSuccess(List<Face> faces) {
+                                        processFaces(faces);
+                                    }
+                                })
+                        .addOnFailureListener(
+                                new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        // Task failed with an exception
+                                        // ...
+                                    }
+                                });
+
+
+    }
+
+    private void processFaces(List<Face> faces) {
+
+        for (Face face : faces) {
+            Log.d("camFunctionality", "found a face");
+
+            Rect bounds = face.getBoundingBox();
+            rectOverlay.frameFace(bounds);
+
+            FaceLandmark leftEye = face.getLandmark(FaceLandmark.LEFT_EYE);
+            if (leftEye != null) {
+                PointF leftEyePos = leftEye.getPosition();
+            }
+
+            FaceLandmark rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE);
+            if (rightEye != null) {
+                PointF rightEyePos = rightEye.getPosition();
+            }
+
+            if (face.getLeftEyeOpenProbability() != null) {
+                float leftEyeOpenProb = face.getLeftEyeOpenProbability();
+            }
+
+            if (face.getRightEyeOpenProbability() != null) {
+                float rightEyeOpenProb = face.getRightEyeOpenProbability();
+            }
+        }
+    }
+
+    private void handlePermissionResponse(boolean permission) {
+        if (permission) {
+            startCamera();
+        }
+        else {
+            Toast.makeText(this,
+                    "Drowsy driver requires camera access. Restart the app to grant permissions."
+                    , Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void registerCamPermissionResponse() {
+
+        // Register the permissions callback, which handles the user's response to the
+        // system permissions dialog.
+        requestPermissionLauncher =
+                registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                    if (isGranted) {
+                        handlePermissionResponse(true);
+                    } else {
+                        handlePermissionResponse(false);
+                    }
+                });
+    }
+
+    private void tryToStartCamera() {
+
+        // check if the app already has permissions for camera
+        if (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED) {
+            // You can use the API that requires the permission.
+            handlePermissionResponse(true);
+        }
+        else {
+            // ask for permission
+            requestPermissionLauncher.launch(
+                    Manifest.permission.CAMERA);
+        }
+    }
+
+
 
 // CONFIGURATION
 // -------------------------------------------------------------------------------------------------

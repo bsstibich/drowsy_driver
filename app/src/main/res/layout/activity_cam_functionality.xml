@@ -11,4 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <com.example.drowsy_driver.RectOverlay
+        android:id="@+id/rect_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
