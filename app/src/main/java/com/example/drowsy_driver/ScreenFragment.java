@@ -1,5 +1,7 @@
 package com.example.drowsy_driver;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -24,6 +26,7 @@ public class ScreenFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -34,13 +37,14 @@ public class ScreenFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.LogOut:
-                NavHostFragment.findNavController(ScreenFragment.this).navigateUp();
+                //NavHostFragment.findNavController(ScreenFragment.this).navigateUp();
+                //getActivity().setContentView(R.layout.activity_login);
+                Intent i = new Intent(getActivity(), MainActivity.class);
+                startActivity(i);
+                ((Activity) getActivity()).overridePendingTransition(0, 0);
+                getActivity().finish();
                 return true;
             case R.id.item1:
-                return true;
-            case R.id.sub_item1:
-                return true;
-            case R.id.sub_item2:
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -63,7 +67,7 @@ public class ScreenFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(ScreenFragment.this).navigate(R.id.action_screen2_to_settingsFragment);
+                NavHostFragment.findNavController(ScreenFragment.this).navigate(R.id.action_screen2_to_displayPersonalInfoFragment);
             }
         });
 

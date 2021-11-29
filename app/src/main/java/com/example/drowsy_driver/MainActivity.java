@@ -9,6 +9,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.forgotPassword:
                 startActivity(new Intent(this, ForgotPasswordActivity.class));
+                overridePendingTransition(0, 0);
                 break;
         }
 
@@ -131,8 +133,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user.isEmailVerified()){ //successful log in
                         //redirect to main loop
-                        //startActivity(new Intent(this, MAIN_CAMERA_LOOP_ACTIVITY.class)); //CHANGE TO MAIN CAMERA ACTIVITY
-                        setContentView(R.layout.activity_main); //this implements the navHost, cuz navHost is in activity main
+                        startActivity(new Intent(MainActivity.this, camFunctionality.class)); //CHANGE TO MAIN CAMERA ACTIVITY
+                        //setContentView(R.layout.activity_main); //this implements the navHost, cuz navHost is in activity main
                     }else{
                         user.sendEmailVerification();
                         Toast.makeText(MainActivity.this, "Check your email for account verification", Toast.LENGTH_LONG).show();
@@ -150,5 +152,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void openCreateAccount(){
         Intent intent = new Intent(MainActivity.this, CreateAccountActivity.class);
         startActivity(intent);
+        overridePendingTransition(0, 0);
     }
 }

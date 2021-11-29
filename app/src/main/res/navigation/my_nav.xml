@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
-    app:startDestination="@id/screen2">
+    app:startDestination="@id/displayPersonalInfoFragment">
     <fragment
         android:id="@+id/screen2"
         android:name="com.example.drowsy_driver.ScreenFragment"
@@ -12,6 +12,9 @@
         <action
             android:id="@+id/action_screen2_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_screen2_to_displayPersonalInfoFragment"
+            app:destination="@id/displayPersonalInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"

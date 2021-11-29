@@ -12,10 +12,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class DisplayPersonalInfoFragment extends Fragment {
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user.getDisplayName();
+        user.getEmail();
     }
 
     @Override
@@ -26,7 +37,7 @@ public class DisplayPersonalInfoFragment extends Fragment {
         Toolbar toolbar = v.findViewById(R.id.toolbar);
         ((AppCompatActivity)(getActivity())).setSupportActionBar(toolbar);
 
-        ((AppCompatActivity)(getActivity())).getSupportActionBar().setTitle("Personal Information");
+        ((AppCompatActivity)(getActivity())).getSupportActionBar().setTitle("Profile");
         ((AppCompatActivity)(getActivity())).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Button editPI = v.findViewById(R.id.editPI);
 
