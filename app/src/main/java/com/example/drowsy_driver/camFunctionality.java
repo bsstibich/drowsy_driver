@@ -69,11 +69,6 @@ public class camFunctionality extends AppCompatActivity {
 
     final static float EYE_OPEN_THRESHOLD = 0.7F;
 
-// OVERRIDE DRAWING METHOD TO OVERLAY RECTANGLES
-// -------------------------------------------------------------------------------------------------
-
-
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -255,13 +250,17 @@ public class camFunctionality extends AppCompatActivity {
                                 new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        // Task failed with an exception
+                                        Log.d("face detection", "face detection failed");
                                         // ...
                                     }
                                 });
 
 
     }
+
+// =================================================================================================
+// ML USE CASES BEGIN HERE
+// =================================================================================================
 
     private void processFaces(List<Face> faces) {
 
@@ -307,6 +306,14 @@ public class camFunctionality extends AppCompatActivity {
         }
     }
 
+// =================================================================================================
+// ML USE CASES END HERE
+// =================================================================================================
+
+// =================================================================================================
+// PERMISSION CHECK FUNCTIONS BEGIN HERE
+// =================================================================================================
+
     private void handlePermissionResponse(boolean permission) {
         if (permission) {
             startCamera();
@@ -348,7 +355,9 @@ public class camFunctionality extends AppCompatActivity {
         }
     }
 
-
+// =================================================================================================
+// PERMISSION CHECK FUNCTIONS BEGIN HERE
+// =================================================================================================
 
 // CONFIGURATION
 // -------------------------------------------------------------------------------------------------

@@ -11,12 +11,20 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+
+// =================================================================================================
+// CUSTOM VIEW OBJECT FOR USE OVER TOP OF CAMERA SURFACE
+// =================================================================================================
 public class Overlay extends View {
 
+// FLAGS FOR PREVIOUS DETECTIONS
+//--------------------------------------------------------------------------------------------------
     private boolean face_detected = false;
     private boolean eyes_detected = false;
     private boolean eyes_are_open = false;
 
+// CONTROLLING THE BORDER
+//--------------------------------------------------------------------------------------------------
     private boolean updateBorder = true;
     private Paint borderBrush;
 
