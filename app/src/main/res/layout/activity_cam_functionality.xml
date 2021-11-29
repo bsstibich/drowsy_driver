@@ -21,13 +21,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/camtoolbar">
+        app:layout_constraintTop_toBottomOf="@+id/camtoolbar" />
 
-        <com.example.drowsy_driver.Overlay
-            android:id="@+id/overlay_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible" />
-    </androidx.camera.view.PreviewView>
+    <com.example.drowsy_driver.Overlay
+        android:id="@+id/overlay_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
