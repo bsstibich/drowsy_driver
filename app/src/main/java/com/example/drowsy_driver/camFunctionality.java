@@ -250,7 +250,7 @@ public class camFunctionality extends AppCompatActivity {
                                 new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        Log.d("face detection", "face detection failed");
+                                        //Log.d("face detection", "face detection failed");
                                         // ...
                                     }
                                 });
