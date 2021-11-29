@@ -2,10 +2,13 @@ package com.example.drowsy_driver;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -28,6 +31,7 @@ import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
@@ -66,6 +70,12 @@ public class camFunctionality extends AppCompatActivity {
     Toolbar toolbar;
 
     final static float EYE_OPEN_THRESHOLD = 0.7F;
+    private long face_processing_begin;
+    private long face_processing_end;
+    private long face_processing_duration;
+
+    private static final String CHANNEL_ID = "drowsy notification channel";
+    private static final int NOTIFY_LVL_1 = 1;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull @NotNull MenuItem item) {
@@ -143,6 +153,19 @@ public class camFunctionality extends AppCompatActivity {
 
         overlay = findViewById(R.id.overlay_view);
         canvas = new Canvas();
+
+// INITIALIZE NOTIFICATION
+// -------------------------------------------------------------------------------------------------
+
+        /*
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.notif_icon)
+                .setContentTitle("Drowsiness Detected")
+                .setContentText("eyes were closed longer than a typical blink")
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        createNotificationChannel();
+        */
 
 // =================================================================================================
 // CAMERA PERMISSIONS CHECK BEGINS
@@ -302,7 +325,11 @@ public class camFunctionality extends AppCompatActivity {
                                 new OnSuccessListener<List<Face>>() {
                                     @Override
                                     public void onSuccess(List<Face> faces) {
+                                        face_processing_begin = System.nanoTime();
                                         processFaces(faces);
+                                        face_processing_end = System.nanoTime();
+                                        face_processing_duration = (face_processing_end-face_processing_begin);
+                                        Log.d("face processing time", (String.format("duration : %d", face_processing_duration)));
                                     }
                                 })
                         .addOnFailureListener(
@@ -310,6 +337,7 @@ public class camFunctionality extends AppCompatActivity {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         Log.d("face detection", "face detection failed");
+                                        e.printStackTrace();
                                         // ...
                                     }
                                 });
@@ -413,6 +441,23 @@ public class camFunctionality extends AppCompatActivity {
                     Manifest.permission.CAMERA);
         }
     }
+
+    /*
+    private void createNotificationChannel() {
+        // Only on API 26+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+    */
 
 // =================================================================================================
 // PERMISSION CHECK FUNCTIONS BEGIN HERE
