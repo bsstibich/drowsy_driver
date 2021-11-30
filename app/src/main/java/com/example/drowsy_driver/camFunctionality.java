@@ -281,10 +281,27 @@ public class camFunctionality extends AppCompatActivity {
                     InputImage image =
                             InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
 
-                    detectFaces(image, detector);
+                    Task<List<Face>> result =
+                            detector.process(image)
+                                    .addOnSuccessListener(
+                                            new OnSuccessListener<List<Face>>() {
+                                                @Override
+                                                public void onSuccess(List<Face> faces) {
+                                                    processFaces(faces);
+                                                    imageProxy.close();
+                                                }
+                                            })
+                                    .addOnFailureListener(
+                                            new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    imageProxy.close();
+                                                    //Log.d("face detection", "face detection failed");
+                                                    //e.printStackTrace();
+                                                    // ...
+                                                }
+                                            });
                 }
-
-                imageProxy.close();
             }
         });
 
@@ -350,15 +367,12 @@ public class camFunctionality extends AppCompatActivity {
 
         if (faces.size() == 1) {
 
-            for (Face face : faces) {
+            overlay.foundFace(true);
+            //Rect bounds = face.getBoundingBox();
+            //rectOverlay.frameFace(bounds);
 
-                overlay.foundFace(true);
-                //Rect bounds = face.getBoundingBox();
-                //rectOverlay.frameFace(bounds);
-
-                if (foundEyes(face)) {
-                    checkEyesOpen(face);
-                }
+            if (foundEyes(faces.get(0))) {
+                checkEyesOpen(faces.get(0));
             }
         } else {
             overlay.foundFace(false);
@@ -366,7 +380,7 @@ public class camFunctionality extends AppCompatActivity {
 
         face_processing_end = System.nanoTime();
         face_processing_duration = (face_processing_end-face_processing_begin);
-        Log.d("face processing time", (String.format("duration : %d", face_processing_duration)));
+        Log.d("face processing time", (String.format("duration : %d for %d faces", face_processing_duration, faces.size())));
     }
 
     private void checkEyesOpen(Face face) {
