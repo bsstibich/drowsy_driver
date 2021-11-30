@@ -1,11 +1,29 @@
 package com.example.drowsy_driver;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.media.Image;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
@@ -13,27 +31,10 @@ import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwner;
-
-import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-//import android.graphics.Camera;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PointF;
-import android.graphics.Rect;
-import android.media.Image;
-import android.os.Bundle;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.OrientationEventListener;
-import android.view.Surface;
-import android.view.View;
-import android.widget.Toast;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -53,7 +54,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static com.google.mlkit.vision.face.FaceDetectorOptions.CLASSIFICATION_MODE_ALL;
 import static com.google.mlkit.vision.face.FaceDetectorOptions.LANDMARK_MODE_ALL;
 
@@ -67,12 +67,81 @@ public class camFunctionality extends AppCompatActivity {
     Overlay overlay;
     Canvas canvas;
 
+    Toolbar toolbar;
+
     final static float EYE_OPEN_THRESHOLD = 0.7F;
+    private long face_processing_begin;
+    private long face_processing_end;
+    private long face_processing_duration;
+
+    private static final String CHANNEL_ID = "drowsy notification channel";
+    private static final int NOTIFY_LVL_1 = 1;
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull @NotNull MenuItem item) {
+        switch (item.getItemId())
+        {
+            case R.id.LogOut:
+                //Intent i = new Intent(camFunctionality.this, MainActivity.class);
+                //startActivity(i);
+                //overridePendingTransition(0, 0);
+                finish();
+                return true;
+            case R.id.SettingsOption:
+                setContentView(R.layout.activity_main);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) { //creates tool bar drop down options
+        if (getSupportActionBar().getTitle().equals("Watcher")) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_main, menu);
+            return true;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        if (getSupportActionBar().getTitle().equals("Edit Personal Information"))
+            return Navigation.findNavController(this, R.id.fragmentContainerView).navigateUp() || super.onSupportNavigateUp();
+        else{
+            Intent i = new Intent(camFunctionality.this, camFunctionality.class);
+            startActivity(i);
+            overridePendingTransition(0, 0);
+            finish();
+        }
+
+        return true;
+    }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cam_functionality);
+
+        toolbar = findViewById(R.id.camtoolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Watcher");
+
+        if (getSupportActionBar() != null)
+        {
+            if (getSupportActionBar().getTitle().equals("Edit Personal Information"))
+            {
+                NavigationUI.setupActionBarWithNavController(camFunctionality.this, Navigation.findNavController(this, R.id.fragmentContainerView));
+            }
+            else if (getSupportActionBar().getTitle().equals("Profile"))
+            {
+                NavigationUI.setupActionBarWithNavController(camFunctionality.this, Navigation.findNavController(this, R.id.fragmentContainerView));
+            }
+        }
 
 // INITIALIZE CAMERA SURFACE
 // -------------------------------------------------------------------------------------------------
@@ -84,6 +153,19 @@ public class camFunctionality extends AppCompatActivity {
 
         overlay = findViewById(R.id.overlay_view);
         canvas = new Canvas();
+
+// INITIALIZE NOTIFICATION
+// -------------------------------------------------------------------------------------------------
+
+        /*
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.notif_icon)
+                .setContentTitle("Drowsiness Detected")
+                .setContentText("eyes were closed longer than a typical blink")
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        createNotificationChannel();
+        */
 
 // =================================================================================================
 // CAMERA PERMISSIONS CHECK BEGINS
@@ -243,14 +325,19 @@ public class camFunctionality extends AppCompatActivity {
                                 new OnSuccessListener<List<Face>>() {
                                     @Override
                                     public void onSuccess(List<Face> faces) {
+                                        face_processing_begin = System.nanoTime();
                                         processFaces(faces);
+                                        face_processing_end = System.nanoTime();
+                                        face_processing_duration = (face_processing_end-face_processing_begin);
+                                        Log.d("face processing time", (String.format("duration : %d", face_processing_duration)));
                                     }
                                 })
                         .addOnFailureListener(
                                 new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        //Log.d("face detection", "face detection failed");
+                                        Log.d("face detection", "face detection failed");
+                                        e.printStackTrace();
                                         // ...
                                     }
                                 });
@@ -354,6 +441,23 @@ public class camFunctionality extends AppCompatActivity {
                     Manifest.permission.CAMERA);
         }
     }
+
+    /*
+    private void createNotificationChannel() {
+        // Only on API 26+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+    */
 
 // =================================================================================================
 // PERMISSION CHECK FUNCTIONS BEGIN HERE
