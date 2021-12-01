@@ -27,13 +27,9 @@ public class Overlay extends View {
     private boolean updateBorder = true;
     private Paint borderBrush;
 
-    // private Paint paint;
-    // private Rect rect = new Rect();
-
     public Overlay(Context context, @Nullable AttributeSet attributes) {
         super(context, attributes);
 
-        // rectSettings();
         borderSettings();
 
         invalidate();
@@ -113,20 +109,4 @@ public class Overlay extends View {
         borderBrush.setStrokeWidth(50F);
         borderBrush.setStyle(Paint.Style.STROKE);
     }
-
-    /*
-    public void frameFace(Rect newRect) {
-        Log.d("rectOverlay", "drawing face");
-        rect = newRect;
-        face_detected = true;
-        invalidate();
-    }
-
-    private void rectSettings() {
-        paint = new Paint();
-        paint.setColor(Color.RED);
-        paint.setStrokeWidth(10F);
-        paint.setStyle(Paint.Style.STROKE);
-    }
-    */
 }

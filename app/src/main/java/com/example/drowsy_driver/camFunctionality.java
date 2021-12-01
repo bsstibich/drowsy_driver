@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.media.Image;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,10 +35,12 @@ import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -69,13 +74,20 @@ public class camFunctionality extends AppCompatActivity {
 
     Toolbar toolbar;
 
-    final static float EYE_OPEN_THRESHOLD = 0.7F;
-    private long face_processing_begin;
-    private long face_processing_end;
-    private long face_processing_duration;
+    final static float EYE_OPEN_THRESHOLD = 0.5F;
+    private boolean face_detected = false;
+    private boolean eyes_are_closed = false;
 
+    private long timer;
+
+    NotificationCompat.Builder builder;
+    NotificationManagerCompat notificationManager;
+    Uri alarm;
+    MediaPlayer mp;
     private static final String CHANNEL_ID = "drowsy notification channel";
     private static final int NOTIFY_LVL_1 = 1;
+    private boolean first_alert_triggered = false;
+    private boolean second_alert_triggered = false;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull @NotNull MenuItem item) {
@@ -157,15 +169,16 @@ public class camFunctionality extends AppCompatActivity {
 // INITIALIZE NOTIFICATION
 // -------------------------------------------------------------------------------------------------
 
-        /*
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+        builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.notif_icon)
                 .setContentTitle("Drowsiness Detected")
                 .setContentText("eyes were closed longer than a typical blink")
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         createNotificationChannel();
-        */
+
+        notificationManager = NotificationManagerCompat.from(this);
+        setAlarm();
 
 // =================================================================================================
 // CAMERA PERMISSIONS CHECK BEGINS
@@ -273,18 +286,7 @@ public class camFunctionality extends AppCompatActivity {
 
 // FEED IMAGE INTO ML ALGORITHM
 // -------------------------------------------------------------------------------------------------
-
-                @OptIn(markerClass = androidx.camera.core.ExperimentalGetImage.class)
-                Image mediaImage = imageProxy.getImage();
-
-                if (mediaImage != null) {
-                    InputImage image =
-                            InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
-
-                    detectFaces(image, detector);
-                }
-
-                imageProxy.close();
+                detectFaces(imageProxy, detector);
             }
         });
 
@@ -314,67 +316,153 @@ public class camFunctionality extends AppCompatActivity {
 // CAMERA USE CASE ENDS
 // =================================================================================================
 
-    private void detectFaces(InputImage image, FaceDetector detector) {
+// =================================================================================================
+// ML USE CASES BEGIN HERE
+// =================================================================================================
+
+    private void detectFaces(ImageProxy imageProxy, FaceDetector detector) {
+
+// GET THE IMAGE FROM THE FRAME
+// -------------------------------------------------------------------------------------------------
+
+        @OptIn(markerClass = androidx.camera.core.ExperimentalGetImage.class)
+        Image mediaImage = imageProxy.getImage();
+
+        if (mediaImage != null) {
+            InputImage image =
+                    InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
 
 // FACE DETECTION LISTENERS
 // -------------------------------------------------------------------------------------------------
 
-        Task<List<Face>> result =
-                detector.process(image)
-                        .addOnSuccessListener(
-                                new OnSuccessListener<List<Face>>() {
-                                    @Override
-                                    public void onSuccess(List<Face> faces) {
-                                        face_processing_begin = System.nanoTime();
-                                        processFaces(faces);
-                                        face_processing_end = System.nanoTime();
-                                        face_processing_duration = (face_processing_end-face_processing_begin);
-                                        Log.d("face processing time", (String.format("duration : %d", face_processing_duration)));
+            Task<List<Face>> result =
+                    detector.process(image)
+                            .addOnSuccessListener(
+                                    new OnSuccessListener<List<Face>>() {
+                                        @Override
+                                        public void onSuccess(List<Face> faces) {
+                                            processFaces(faces);
+                                        }
+                                    })
+                            .addOnFailureListener(
+                                    new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // included for logging and debugging purposes
+                                            //Log.d("face detection", "face detection failed");
+                                            //e.printStackTrace();
+                                            // ...
+                                        }
+                                    })
+                            .addOnCompleteListener(
+                                    new OnCompleteListener<List<Face>>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<List<Face>> task) {
+                                            imageProxy.close();
+                                        }
                                     }
-                                })
-                        .addOnFailureListener(
-                                new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.d("face detection", "face detection failed");
-                                        e.printStackTrace();
-                                        // ...
-                                    }
-                                });
-
-
+                            );
+        }
     }
-
-// =================================================================================================
-// ML USE CASES BEGIN HERE
-// =================================================================================================
 
     private void processFaces(List<Face> faces) {
 
         if (faces.size() == 1) {
 
-            for (Face face : faces) {
-
+            if (!face_detected) {
+                face_detected = true;
                 overlay.foundFace(true);
-                //Rect bounds = face.getBoundingBox();
-                //rectOverlay.frameFace(bounds);
-
-                if (foundEyes(face)) {
-                    checkEyesOpen(face);
-                }
             }
-        } else {
-            overlay.foundFace(false);
+
+            if (foundEyes(faces.get(0))) {
+                checkEyesOpen(faces.get(0));
+            }
+        }
+
+        else {
+
+            if (face_detected) {
+                face_detected = false;
+                overlay.foundFace(false);
+            }
         }
     }
 
     private void checkEyesOpen(Face face) {
         if (face.getLeftEyeOpenProbability() == null || face.getRightEyeOpenProbability() == null) {
-            overlay.eyesOpen(false);
-        } else {
-            boolean eyes = (face.getLeftEyeOpenProbability() >= EYE_OPEN_THRESHOLD
+            handleEyesClosed();
+        }
+
+        else {
+            boolean eye_status = (face.getLeftEyeOpenProbability() >= EYE_OPEN_THRESHOLD
                     && face.getRightEyeOpenProbability() >= EYE_OPEN_THRESHOLD);
-            overlay.eyesOpen(eyes);
+
+            if (eye_status) {
+                handleEyesOpen();
+            } else {
+                handleEyesClosed();
+            }
+        }
+    }
+
+    private void setAlarm() {
+        alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+
+        if (alarm == null) {
+            alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+
+            if (alarm == null) {
+                alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            }
+        }
+
+        mp = MediaPlayer.create(getApplicationContext(), alarm);
+    }
+
+    private void trigger_first_alert() {
+        notificationManager.notify(NOTIFY_LVL_1, builder.build());
+        first_alert_triggered = true;
+    }
+
+    private void trigger_second_alert() {
+        mp.start();
+        second_alert_triggered = true;
+    }
+
+    private void reset_alerts() {
+        first_alert_triggered = false;
+        if (second_alert_triggered) {
+            mp.pause();
+            second_alert_triggered = false;
+        }
+    }
+
+    private void handleEyesClosed() {
+        if (eyes_are_closed) {
+            float duration = getTime();
+            if (duration > 3 && !second_alert_triggered) {
+                trigger_second_alert();
+            }
+            else if (duration > 0.5 && !first_alert_triggered) {
+                trigger_first_alert();
+            }
+            else {
+                if (duration > 0.25) {
+                    overlay.eyesOpen(false);
+                }
+            }
+        } else {
+            eyes_are_closed = true;
+            startTimer();
+        }
+    }
+
+    private void handleEyesOpen() {
+        if (eyes_are_closed) {
+            eyes_are_closed = false;
+            resetTimer();
+            reset_alerts();
+            overlay.eyesOpen(true);
         }
     }
 
@@ -385,12 +473,24 @@ public class camFunctionality extends AppCompatActivity {
         if (leftEye != null && rightEye != null) {
             overlay.foundEyes(true);
             return true;
-            //PointF leftEyePos = leftEye.getPosition();
-            //PointF rightEyePos = rightEye.getPosition();
         } else {
             overlay.foundEyes(false);
             return false;
         }
+    }
+
+    private void startTimer() {
+        timer = System.currentTimeMillis();
+    }
+
+    private void resetTimer() {
+        timer = 0;
+    }
+
+    private float getTime() {
+        long now = System.currentTimeMillis();
+        float time_elapsed = (float) (now - timer) / 1000;
+        return time_elapsed;
     }
 
 // =================================================================================================
@@ -442,7 +542,6 @@ public class camFunctionality extends AppCompatActivity {
         }
     }
 
-    /*
     private void createNotificationChannel() {
         // Only on API 26+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -457,7 +556,6 @@ public class camFunctionality extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
     }
-    */
 
 // =================================================================================================
 // PERMISSION CHECK FUNCTIONS BEGIN HERE
