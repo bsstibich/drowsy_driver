@@ -30,7 +30,11 @@
         android:id="@+id/personalInfoFragment"
         android:name="com.example.drowsy_driver.PersonalInfoFragment"
         android:label="fragment_personal_info"
-        tools:layout="@layout/fragment_pi_settings" />
+        tools:layout="@layout/fragment_pi_settings" >
+        <action
+            android:id="@+id/action_personalInfoFragment_to_changePasswordFragment"
+            app:destination="@id/changePasswordFragment" />
+    </fragment>
     <fragment
         android:id="@+id/displayPersonalInfoFragment"
         android:name="com.example.drowsy_driver.DisplayPersonalInfoFragment"
@@ -39,5 +43,18 @@
         <action
             android:id="@+id/action_displayPersonalInfoFragment_to_personalInfoFragment"
             app:destination="@id/personalInfoFragment" />
+        <action
+            android:id="@+id/action_displayPersonalInfoFragment_to_deleteAccountFragment"
+            app:destination="@id/deleteAccountFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/deleteAccountFragment"
+        android:name="com.example.drowsy_driver.DeleteAccountFragment"
+        android:label="fragment_delete_account"
+        tools:layout="@layout/fragment_delete_account" />
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.example.drowsy_driver.ChangePasswordFragment"
+        android:label="fragment_change_password"
+        tools:layout="@layout/fragment_change_password" />
 </navigation>

@@ -119,9 +119,8 @@ dependencies {
     def activity_version = "1.4.0"
     implementation "androidx.activity:activity:$activity_version"
     def fragment_version = "1.4.0"
-    
+
     // Java language implementation
-    
     implementation "androidx.fragment:fragment:$fragment_version"
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
@@ -146,7 +145,7 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    
+
     // Testing Fragments in Isolation
     debugImplementation "androidx.fragment:fragment-testing:$fragment_version"
 

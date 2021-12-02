@@ -122,7 +122,16 @@ public class camFunctionality extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         if (getSupportActionBar().getTitle().equals("Edit Personal Information"))
+        {
             return Navigation.findNavController(this, R.id.fragmentContainerView).navigateUp() || super.onSupportNavigateUp();
+        }
+        else if (getSupportActionBar().getTitle().equals("Delete Profile")){
+            return Navigation.findNavController(this, R.id.fragmentContainerView).navigateUp() || super.onSupportNavigateUp();
+        }
+        else if (getSupportActionBar().getTitle().equals("Change Password"))
+        {
+            return Navigation.findNavController(this, R.id.fragmentContainerView).navigateUp() || super.onSupportNavigateUp();
+        }
         else{
             Intent i = new Intent(camFunctionality.this, camFunctionality.class);
             startActivity(i);
