@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -62,43 +63,49 @@ public class DeleteAccountFragment extends Fragment {
 
         database = FirebaseDatabase.getInstance();
         ref = database.getReference("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
         displayEmail = w.findViewById(R.id.email_address);
 
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                Account userAccount = snapshot.getValue(Account.class);
-                email = userAccount.getEmail();
-                realPassword = userAccount.getPassword();
-                displayEmail.setText(email);
-            }
+        if (user != null) {
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                    Account userAccount = snapshot.getValue(Account.class);
+                    if (userAccount != null)
+                    {
+                        email = userAccount.getEmail();
+                        realPassword = userAccount.getPassword();
+                        displayEmail.setText(email);
+                    }
 
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-
-            }
-        });
-
-        delete = w.findViewById(R.id.deleteAccount);
-
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                user = FirebaseAuth.getInstance().getCurrentUser();
-
-                editPassword = w.findViewById(R.id.password);
-                password = editPassword.getText().toString().trim();
-
-                if (realPassword.equals(password))
-                {
-                    user = FirebaseAuth.getInstance().getCurrentUser();
-                    user.delete();
-                    getActivity().finish();
                 }
 
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                    Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+            delete = w.findViewById(R.id.deleteAccount);
+
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    editPassword = w.findViewById(R.id.password);
+                    password = editPassword.getText().toString().trim();
+
+                    if (realPassword.equals(password)) {
+                        user = FirebaseAuth.getInstance().getCurrentUser();
+                        ref.removeValue();
+                        user.delete();
+                        getActivity().finish();
+                    }
+
+                }
+            });
+        }
 
         return w;
     }

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +36,7 @@ public class ChangePasswordFragment extends Fragment {
 
     String realPassword;
 
+    FirebaseUser user;
     FirebaseDatabase database;
     DatabaseReference ref;
 
@@ -58,6 +60,7 @@ public class ChangePasswordFragment extends Fragment {
 
         database = FirebaseDatabase.getInstance();
         ref = database.getReference("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
         oldPassword = v.findViewById(R.id.oldPassword);
         newPassword = v.findViewById(R.id.newPassword);
@@ -69,8 +72,11 @@ public class ChangePasswordFragment extends Fragment {
              public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
                  Account userAccount = snapshot.getValue(Account.class);
 
-                realPassword = userAccount.getPassword();
-                displayEmail.setText(userAccount.getEmail());
+                 if (userAccount != null)
+                 {
+                     realPassword = userAccount.getPassword();
+                     displayEmail.setText(userAccount.getEmail());
+                 }
              }
 
              @Override
@@ -92,6 +98,8 @@ public class ChangePasswordFragment extends Fragment {
                     if (nPass.equals(cPass))
                     {
                         ref.child("password").setValue(nPass);
+                        user.updatePassword(nPass);
+                        Toast.makeText(getActivity(), "password changed", Toast.LENGTH_SHORT).show();
                     }
                     else {
                         Toast.makeText(getActivity(), "passwords don't match", Toast.LENGTH_SHORT).show();

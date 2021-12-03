@@ -32,6 +32,7 @@ public class PersonalInfoFragment extends Fragment {
 
     Boolean flag;
 
+    FirebaseUser user;
     FirebaseDatabase database;
     DatabaseReference ref;
 
@@ -72,31 +73,39 @@ public class PersonalInfoFragment extends Fragment {
         editEmail = v.findViewById(R.id.email_address);
         editVehicleInfo = v.findViewById(R.id.vehicleInfo);
 
-        //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                Account userAccount = snapshot.getValue(Account.class);
+        if (user != null)
+        {
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                    Account userAccount = snapshot.getValue(Account.class);
 
-                editName.setText(userAccount.getFullName());
-                editEmail.setText(userAccount.getEmail());
-                editVehicleInfo.setText(userAccount.getVehicleInfo());
-            }
+                    if (userAccount != null)
+                    {
+                        editName.setText(userAccount.getFullName());
+                        editEmail.setText(userAccount.getEmail());
+                        editVehicleInfo.setText(userAccount.getVehicleInfo());
+                    }
 
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                }
 
-        saveInfo = v.findViewById(R.id.SaveInformation);
-        saveInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setAccount();
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                    Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            saveInfo = v.findViewById(R.id.SaveInformation);
+            saveInfo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setAccount();
+                }
+            });
+        }
+
         return v;
     }
 
@@ -135,6 +144,7 @@ public class PersonalInfoFragment extends Fragment {
         ref.child("fullName").setValue(name);
         ref.child("email").setValue(email);
         ref.child("vehicleInfo").setValue(vehicleInfo);
+        user.updateEmail(email);
 
         if (flag) Toast.makeText(getActivity(), "Information Saved", Toast.LENGTH_SHORT).show();
 

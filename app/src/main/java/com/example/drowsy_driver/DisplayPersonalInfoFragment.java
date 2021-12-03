@@ -39,6 +39,7 @@ public class DisplayPersonalInfoFragment extends Fragment {
 
     Button deleteAccount;
 
+    FirebaseUser user;
     FirebaseDatabase database;
     DatabaseReference ref;
 
@@ -86,6 +87,10 @@ public class DisplayPersonalInfoFragment extends Fragment {
 
         database = FirebaseDatabase.getInstance();
         ref = database.getReference("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        ref.child("email").setValue(user.getEmail());
+
         //Toast.makeText(getActivity(), ref.getKey(), Toast.LENGTH_SHORT).show();
 
         name = v.findViewById(R.id.name);
@@ -93,29 +98,37 @@ public class DisplayPersonalInfoFragment extends Fragment {
         vehicle = v.findViewById(R.id.vehicleInfo);
         password = v.findViewById(R.id.password);
 
+        if (user != null)
+        {
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                    Account userAccount = snapshot.getValue(Account.class);
 
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                Account userAccount = snapshot.getValue(Account.class);
 
-                name.setText("Name: \n" + userAccount.getFullName());
-                email.setText("Email Address: \n" + userAccount.getEmail());
-                vehicle.setText("Vehicle: \n" + userAccount.getVehicleInfo());
+                    if (userAccount != null)
+                    {
+                        name.setText("Name: \n" + userAccount.getFullName());
+                        email.setText("Email Address: \n" + userAccount.getEmail());
+                        vehicle.setText("Vehicle: \n" + userAccount.getVehicleInfo());
 
-                secretPassword = "";
-                for (int i = 0; i < userAccount.getPassword().length(); i++)
-                {
-                    secretPassword = secretPassword + "*";
+                        secretPassword = "";
+                        for (int i = 0; i < userAccount.getPassword().length(); i++)
+                        {
+                            secretPassword = secretPassword + "*";
+                        }
+                        password.setText("Password: \n" + secretPassword);
+                    }
+
                 }
-                password.setText("Password: \n" + secretPassword);
-            }
 
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-               Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                    Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
         return v;
     }
 }
