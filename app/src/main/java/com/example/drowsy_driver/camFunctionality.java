@@ -76,7 +76,7 @@ public class camFunctionality extends AppCompatActivity {
 
     final static float EYE_OPEN_THRESHOLD = 0.5F;
     private boolean face_detected = false;
-    private boolean eyes_are_closed = false;
+    private boolean eyes_are_closed = true;
 
     private long timer;
 
@@ -470,6 +470,7 @@ public class camFunctionality extends AppCompatActivity {
             // update the screen
             if (face_detected) {
                 face_detected = false;
+                eyes_are_closed = true;
                 overlay.foundFace(false);
             }
         }
@@ -519,10 +520,10 @@ public class camFunctionality extends AppCompatActivity {
     // resets alerts when eyes reopen
     private void handleEyesOpen() {
         if (eyes_are_closed) {
+            overlay.eyesOpen(true);
             eyes_are_closed = false;
             resetTimer();
             reset_alerts();
-            overlay.eyesOpen(true);
         }
     }
 
