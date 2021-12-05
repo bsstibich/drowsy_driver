@@ -73,22 +73,18 @@ plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
 }
-
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 android {
     compileSdk 31
-
     defaultConfig {
         applicationId "com.example.drowsy_driver"
         minSdk 21
         targetSdk 31
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -99,10 +95,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    useLibrary 'android.test.runner'
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.mock'
 }
-
 dependencies {
-
     // CameraX core library using the camera2 implementation
     def camerax_version = "1.0.2"
     implementation "androidx.camera:camera-core:${camerax_version}"
@@ -119,9 +116,8 @@ dependencies {
     def activity_version = "1.4.0"
     implementation "androidx.activity:activity:$activity_version"
     def fragment_version = "1.4.0"
-    
+
     // Java language implementation
-    
     implementation "androidx.fragment:fragment:$fragment_version"
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
@@ -141,17 +137,36 @@ dependencies {
     // Testing
     androidTestImplementation 'com.android.support:support-annotations:24.0.0'
     androidTestImplementation 'com.android.support.test:runner:0.5'
-    androidTestImplementation 'androidx.test:runner:1.4.0'
-    androidTestImplementation 'androidx.test:rules:1.4.0'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    
+
     // Testing Fragments in Isolation
     debugImplementation "androidx.fragment:fragment-testing:$fragment_version"
 
-    // notification
-    def core_version = "1.6.0"
-    implementation "androidx.core:core:$core_version"
+    // Core library
+    androidTestImplementation 'androidx.test:core:1.4.0'
+
+    // AndroidJUnitRunner and JUnit Rules
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test:rules:1.4.0'
+    testImplementation 'junit:junit:4.+'
+
+    // Assertions
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.ext:truth:1.4.0'
+    androidTestImplementation 'com.google.truth:truth:1.0.1'
+
+    // Espresso dependencies
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-accessibility:3.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.4.0'
+    androidTestImplementation 'androidx.test.espresso.idling:idling-concurrent:3.4.0'
+
+    // other testing
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+    androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
+
+// The following Espresso dependency can be either "implementation"
+// or "androidTestImplementation", depending on whether you want the
 }
 ```
