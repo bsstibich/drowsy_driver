@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +40,13 @@ public class PersonalInfoFragment extends Fragment {
     EditText editName;
     EditText editEmail;
     EditText editVehicleInfo;
+
+    long timeStart;
+    long timeEnd;
+
+    float timeResultDatabase;
+    float timeResultFirebase;
+    float timeResult;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,9 +92,17 @@ public class PersonalInfoFragment extends Fragment {
 
                     if (userAccount != null)
                     {
+                        //timing account database retrieval
+                        timeStart = System.currentTimeMillis();
                         editName.setText(userAccount.getFullName());
                         editEmail.setText(userAccount.getEmail());
                         editVehicleInfo.setText(userAccount.getVehicleInfo());
+                        timeEnd = System.currentTimeMillis();
+
+                        timeResult = timeEnd - timeStart;
+
+                        Log.v("PersonalInfo", "Time to Retrieve Data: " + timeResult/1000 + " seconds");
+                        Log.v("PersonalInfo", "Data Retrieved From: " + ref.toString());
                     }
 
                 }
@@ -141,12 +157,28 @@ public class PersonalInfoFragment extends Fragment {
             return;
         }
 
+        //timing update database account
+        timeStart = System.currentTimeMillis();
         ref.child("fullName").setValue(name);
         ref.child("email").setValue(email);
         ref.child("vehicleInfo").setValue(vehicleInfo);
-        user.updateEmail(email);
+        timeEnd = System.currentTimeMillis();
+        timeResultDatabase = timeEnd - timeStart;
 
-        if (flag) Toast.makeText(getActivity(), "Information Saved", Toast.LENGTH_SHORT).show();
+        //timing update firebase account
+        timeStart = System.currentTimeMillis();
+        user.updateEmail(email);
+        timeEnd = System.currentTimeMillis();
+        timeResultFirebase = timeEnd - timeStart;
+
+        if (flag) {
+            Toast.makeText(getActivity(), "Information Saved", Toast.LENGTH_SHORT).show();
+
+            Log.v("PersonalInfo", "Time to Update Database Account: " + timeResultDatabase/1000);
+            Log.v("PersonalInfo", "Database Account Updated: " + ref.toString());
+            Log.v("PersonalInfo", "Time to Update Firebase User: " + timeResultFirebase/1000);
+            Log.v("PersonalInfo", "Firebase User Updated: " + user.toString());
+        }
 
     }
 }

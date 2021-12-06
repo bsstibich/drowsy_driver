@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,11 @@ public class DisplayPersonalInfoFragment extends Fragment {
     TextView password;
 
     String secretPassword;
+
+    long timeStart;
+    long timeEnd;
+    
+    float timeResult;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -108,9 +114,18 @@ public class DisplayPersonalInfoFragment extends Fragment {
 
                     if (userAccount != null)
                     {
+                        //timing start of retrieving data
+                        timeStart = System.currentTimeMillis();
                         name.setText("Name: \n" + userAccount.getFullName());
                         email.setText("Email Address: \n" + userAccount.getEmail());
                         vehicle.setText("Vehicle: \n" + userAccount.getVehicleInfo());
+                        timeEnd = System.currentTimeMillis();
+                        //timing end of retrieving data
+
+                        timeResult = (timeEnd - timeStart);
+                        //verbose output for time to retrieve data and from where
+                        Log.v("DisplayPI", "Time to Retrieve Data: " + timeResult/1000 + " seconds");
+                        Log.v("DisplayPI", "Data Retrieved From: " + ref.toString());
 
                         secretPassword = "";
                         for (int i = 0; i < userAccount.getPassword().length(); i++)
@@ -127,8 +142,8 @@ public class DisplayPersonalInfoFragment extends Fragment {
                     Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
-        }
 
+        }
         return v;
     }
 }

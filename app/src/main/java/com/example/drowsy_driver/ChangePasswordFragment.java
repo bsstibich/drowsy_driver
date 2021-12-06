@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,12 @@ public class ChangePasswordFragment extends Fragment {
     FirebaseUser user;
     FirebaseDatabase database;
     DatabaseReference ref;
+
+    long timeStart;
+    long timeEnd;
+
+    float timeResultDatabase;
+    float timeResultFirebase;
 
 
     @Override
@@ -97,8 +104,25 @@ public class ChangePasswordFragment extends Fragment {
                 {
                     if (nPass.equals(cPass))
                     {
+                        //times updating database account
+                        timeStart = System.currentTimeMillis();
                         ref.child("password").setValue(nPass);
+                        timeEnd = System.currentTimeMillis();
+                        timeResultDatabase = timeEnd - timeStart;
+
+                        //times updating firebase user
+                        timeStart = System.currentTimeMillis();
                         user.updatePassword(nPass);
+                        timeEnd = System.currentTimeMillis();
+                        timeResultFirebase = timeEnd - timeStart;
+
+                        //verbose output for updating database and firebase user
+                        Log.v("ChangePassword", "Time to Update Database Account Password: " + timeResultDatabase/1000 + " seconds");
+                        Log.v("ChangePassword", "Database Account Updated: " + ref.toString());
+                        Log.v("ChangePassword", "Time to Update Firebase User Password: " + timeResultFirebase/1000 + " seconds");
+                        Log.v("ChangePassword", "Firebase User Updated: " + user.toString());
+
+
                         Toast.makeText(getActivity(), "password changed", Toast.LENGTH_SHORT).show();
                     }
                     else {

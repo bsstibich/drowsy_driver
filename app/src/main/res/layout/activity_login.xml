@@ -35,8 +35,8 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="163dp"
-        android:layout_height="92dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:fontFamily="sans-serif"
         android:text="Welcome to Drowsy Driver!"
         android:textAlignment="center"
@@ -49,8 +49,8 @@
 
     <Button
         android:id="@+id/signInButton"
-        android:layout_width="211dp"
-        android:layout_height="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Sign in"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -71,8 +71,8 @@
 
     <Button
         android:id="@+id/createAccount"
-        android:layout_width="109dp"
-        android:layout_height="54dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Create Account"
         app:layout_constraintBottom_toBottomOf="parent"
