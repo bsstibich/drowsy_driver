@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,8 +63,12 @@ public class DeleteAccountFragment extends Fragment {
         ((AppCompatActivity)(getActivity())).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         database = FirebaseDatabase.getInstance();
+
         ref = database.getReference("Accounts").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        String databaseAccountName = ref.toString();
+
         user = FirebaseAuth.getInstance().getCurrentUser();
+        String firebaseAccountName = user.toString();
 
         displayEmail = w.findViewById(R.id.email_address);
 
@@ -100,6 +105,9 @@ public class DeleteAccountFragment extends Fragment {
                         user = FirebaseAuth.getInstance().getCurrentUser();
                         ref.removeValue();
                         user.delete();
+
+                        Log.v("DeleteAccount", "Database Account Deleted: " + databaseAccountName);
+                        Log.v("DeleteAccount", "Firebase User Account Deleted: " + firebaseAccountName);
                         getActivity().finish();
                     }
 
